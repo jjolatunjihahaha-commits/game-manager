@@ -1,0 +1,10 @@
+{
+  "name": "Game Manager",
+  "version": "0.0.1",
+  "description": "Story tracker, prompt optimiser, character & lore manager (inline drawer).",
+  "author": "YourName",
+  "icon": "icon.png",
+  "entry": "main.js",
+  "settings": "ui/settings.html",
+  "requires": []
+}
