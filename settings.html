@@ -3,7 +3,7 @@
   <button id="gm-collapse-toggle" class="gm-header" type="button" aria-expanded="false">
     <span class="gm-header-title">
       <strong>Game Manager</strong>
-      <small>Persistent continuity · Memory · Prompt cleanup</small>
+      <small>Manual continuity · Character card · Lorebook</small>
     </span>
     <span class="gm-header-right">
       <span id="gm-status" class="gm-status">Idle</span>
@@ -12,102 +12,57 @@
   </button>
 
   <div id="gm-content" class="gm-content" hidden>
-
     <section class="gm-section">
-      <h3>Prompt Optimizer</h3>
-      <label class="gm-check">
-        <input id="gm-prompt-enabled" type="checkbox">
-        Enable prompt cleanup
-      </label>
-      <label>Optimization mode
-        <select id="gm-prompt-mode">
-          <option value="conservative">Conservative</option>
-          <option value="balanced">Balanced</option>
-          <option value="aggressive">Aggressive</option>
-        </select>
-      </label>
-      <p class="gm-note">
-        Removes eligible repeated instructions while protecting dialogue,
-        character information, structured content and memory blocks.
-      </p>
-      <div id="gm-prompt-stats" class="gm-muted">
-        No prompt optimizations recorded this session.
-      </div>
-    </section>
-
-    <section class="gm-section">
-      <h3>CharMemory Integration</h3>
-      <p id="gm-memory-files" class="gm-muted">
-        Checking for CharMemory files…
-      </p>
+      <h3>Conversation processing</h3>
+      <p class="gm-note">Run this after a conversation or story milestone. Game Manager reads existing CharMemory Data Bank files and prepares proposed changes. Nothing is saved until you approve it.</p>
       <button id="gm-process" class="menu_button">
-        <i class="fa-solid fa-brain"></i> Process memories
+        <i class="fa-solid fa-magnifying-glass"></i>
+        Analyze memories and prepare updates
       </button>
-      <label class="gm-check">
-        <input id="gm-auto-process" type="checkbox" disabled>
-        Automatic background processing (unavailable)
+      <p id="gm-memory-files" class="gm-muted">CharMemory files have not been checked yet.</p>
+    </section>
+
+    <section class="gm-section">
+      <h3>Review and edit proposed changes</h3>
+      <p id="gm-pending-summary" class="gm-muted">No pending analysis. Analyze memories to prepare a review.</p>
+
+      <label>
+        Character state — saved to character card metadata
+        <textarea id="gm-state" rows="7" placeholder="Current relationship status, promises, roles and ongoing circumstances…"></textarea>
       </label>
-      <label class="gm-check">
-        <input id="gm-auto-apply" type="checkbox">
-        Automatically apply Data Bank and character metadata
+
+      <label>
+        Event timeline — persistent Data Bank record
+        <textarea id="gm-timeline" rows="8" placeholder="Chronological significant events…"></textarea>
       </label>
-    </section>
 
-    <section class="gm-section">
-      <h3>Pending Updates</h3>
-      <div id="gm-pending" class="gm-muted">
-        No proposed updates.
-      </div>
-      <div class="gm-actions">
-        <button id="gm-apply-data" class="menu_button" disabled>
-          Apply character state
-        </button>
-      </div>
-    </section>
-
-    <section class="gm-section">
-      <h3>Character State</h3>
-      <p id="gm-card-state" class="gm-muted">
-        Character state unknown.
-      </p>
-      <textarea id="gm-state" rows="6"
-        placeholder="Current relationships, promises and circumstances…"></textarea>
-      <button id="gm-save-state" class="menu_button">Save state</button>
-    </section>
-
-    <section class="gm-section">
-      <h3>Event Timeline</h3>
-      <textarea id="gm-timeline" rows="6"
-        placeholder="Chronological significant events…"></textarea>
-      <button id="gm-save-timeline" class="menu_button">Save timeline</button>
-    </section>
-
-    <section class="gm-section">
-      <h3>World Lore Archive</h3>
-      <textarea id="gm-lore" rows="6"
-        placeholder="Persistent world facts…"></textarea>
-      <button id="gm-save-lore" class="menu_button">Save lore</button>
-    </section>
-
-    <section class="gm-section">
-      <h3>Lorebook Synchronization</h3>
-      <label>Character Lorebook name
-        <input id="gm-lorebook-name" type="text"
-          placeholder="Use linked Lorebook if blank">
+      <label>
+        World lore archive — persistent Data Bank record
+        <textarea id="gm-lore" rows="8" placeholder="Durable facts about the shared setting…"></textarea>
       </label>
-      <button id="gm-apply-lore" class="menu_button" disabled>
-        Synchronize Lorebook
+
+      <label>
+        Proposed Lorebook entries — editable JSON
+        <textarea id="gm-facts" rows="9" spellcheck="false" placeholder='[{"title":"Entry title","keys":["keyword"],"content":"Lorebook content"}]'></textarea>
+      </label>
+
+      <label>
+        Existing character Lorebook name
+        <input id="gm-lorebook-name" type="text" placeholder="Leave blank to use the character's linked Lorebook">
+      </label>
+
+      <button id="gm-apply-all" class="menu_button" disabled>
+        <i class="fa-solid fa-check"></i>
+        Apply approved updates
       </button>
-      <p class="gm-note">
-        Only Game Manager-managed entries are updated.
-      </p>
+
+      <p class="gm-note">Applying saves the character state, timeline and lore archive, then creates or updates Game Manager-managed Lorebook entries. CharMemory's original memory files are never modified.</p>
     </section>
 
-    <div class="gm-footer">
-      <button id="gm-refresh" class="menu_button">
-        <i class="fa-solid fa-rotate"></i> Refresh
-      </button>
-    </div>
-
+    <section class="gm-section">
+      <h3>Existing saved continuity</h3>
+      <button id="gm-refresh" class="menu_button">Reload saved files</button>
+      <p id="gm-card-state" class="gm-muted">Character card state not checked.</p>
+    </section>
   </div>
 </div>
