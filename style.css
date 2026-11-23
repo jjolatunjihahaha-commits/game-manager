@@ -1,12 +1,264 @@
-.gm-root{display:flex;flex-direction:column;gap:12px;padding:10px;color:var(--SmartThemeBodyColor)}
-.gm-header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--SmartThemeBorderColor)}
-.gm-header strong{display:block;font-size:1.1em}.gm-header small{display:block;opacity:.7;margin-top:3px}
-.gm-status{font-size:.85em;opacity:.8}.gm-status[data-error="true"]{color:var(--SmartThemeQuoteColor)}
-.gm-section{border:1px solid var(--SmartThemeBorderColor);border-radius:8px;padding:10px;display:flex;flex-direction:column;gap:8px}
-.gm-section h3{margin:0;font-size:1em}.gm-section label{display:flex;flex-direction:column;gap:5px}
-.gm-section .gm-check{display:flex;flex-direction:row;align-items:center;gap:8px}
-.gm-section input[type="text"],.gm-section select,.gm-section textarea{width:100%;box-sizing:border-box;background:var(--SmartThemeBlurTintColor);color:var(--SmartThemeBodyColor);border:1px solid var(--SmartThemeBorderColor);border-radius:5px;padding:7px}
-.gm-section textarea{resize:vertical;font-family:var(--monoFontFamily,monospace);font-size:.9em}
-.gm-note,.gm-muted{font-size:.85em;opacity:.75;margin:0;line-height:1.45}.gm-actions,.gm-footer{display:flex;gap:8px;flex-wrap:wrap}
-.gm-preview{font-size:.9em}.gm-preview pre{white-space:pre-wrap;max-height:260px;overflow:auto;background:var(--SmartThemeBlurTintColor);padding:8px;border-radius:5px}
-.gm-preview details{margin-top:7px}.gm-root button:disabled{opacity:.45;cursor:not-allowed}
+
+/* Main extension */
+.gm-root {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 6px 0;
+    color: var(--SmartThemeBodyColor);
+}
+
+/* Collapsible header */
+.gm-header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px;
+    border: 1px solid var(--SmartThemeBorderColor);
+    border-radius: 8px;
+    background: var(--SmartThemeBlurTintColor);
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.gm-header-title {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.gm-header-title strong {
+    font-size: 1.05em;
+}
+
+.gm-header-title small {
+    opacity: .65;
+    font-size: .82em;
+}
+
+.gm-header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.gm-header:hover {
+    background: var(--SmartThemeQuoteColor);
+}
+
+#gm-collapse-icon {
+    transition: transform .2s ease;
+}
+
+.gm-header[aria-expanded="true"] #gm-collapse-icon {
+    transform: rotate(180deg);
+}
+
+.gm-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.gm-content[hidden] {
+    display: none;
+}
+
+/* Sections */
+.gm-section {
+    border: 1px solid var(--SmartThemeBorderColor);
+    border-radius: 8px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.gm-section h3 {
+    margin: 0;
+    font-size: 1em;
+}
+
+.gm-section label {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.gm-section .gm-check {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+}
+
+.gm-section input[type="text"],
+.gm-section select,
+.gm-section textarea {
+    width: 100%;
+    box-sizing: border-box;
+    background: var(--SmartThemeBlurTintColor);
+    color: var(--SmartThemeBodyColor);
+    border: 1px solid var(--SmartThemeBorderColor);
+    border-radius: 5px;
+    padding: 7px;
+}
+
+.gm-section textarea {
+    resize: vertical;
+    font-family: var(--monoFontFamily, monospace);
+    font-size: .9em;
+}
+
+.gm-note,
+.gm-muted {
+    font-size: .85em;
+    opacity: .75;
+    margin: 0;
+    line-height: 1.45;
+}
+
+.gm-actions,
+.gm-footer {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.gm-preview {
+    font-size: .9em;
+}
+
+.gm-preview pre {
+    white-space: pre-wrap;
+    max-height: 260px;
+    overflow: auto;
+    background: var(--SmartThemeBlurTintColor);
+    padding: 8px;
+    border-radius: 5px;
+}
+
+.gm-root button:disabled {
+    opacity: .45;
+    cursor: not-allowed;
+}
+
+/* Floating launcher */
+#gm-floating {
+    position: fixed;
+    z-index: 99999;
+    right: 24px;
+    bottom: 90px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+    font-family: inherit;
+    color: var(--SmartThemeBodyColor);
+}
+
+#gm-float-launcher {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    border: 1px solid var(--SmartThemeBorderColor);
+    background: var(--SmartThemeBlurTintColor);
+    color: var(--SmartThemeBodyColor);
+    box-shadow: 0 3px 12px #0008;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+#gm-float-launcher:hover {
+    filter: brightness(1.2);
+    transform: scale(1.05);
+}
+
+#gm-float-panel {
+    display: none;
+    width: 235px;
+    padding: 10px;
+    border: 1px solid var(--SmartThemeBorderColor);
+    border-radius: 10px;
+    background: var(--SmartThemeBlurTintColor);
+    box-shadow: 0 5px 22px #0009;
+    backdrop-filter: blur(12px);
+}
+
+#gm-float-panel.gm-float-open {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.gm-float-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 3px 2px 8px;
+    border-bottom: 1px solid var(--SmartThemeBorderColor);
+    cursor: move;
+    user-select: none;
+    touch-action: none;
+}
+
+.gm-float-head strong {
+    font-size: .95em;
+}
+
+.gm-float-close {
+    border: 0;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+.gm-float-status {
+    font-size: .75em;
+    opacity: .7;
+    overflow-wrap: anywhere;
+}
+
+.gm-float-button {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid var(--SmartThemeBorderColor);
+    border-radius: 6px;
+    background: var(--SmartThemeBlurTintColor);
+    color: inherit;
+    cursor: pointer;
+    text-align: left;
+    font-size: .85em;
+}
+
+.gm-float-button:hover {
+    filter: brightness(1.2);
+}
+
+.gm-float-button:disabled {
+    opacity: .4;
+    cursor: not-allowed;
+}
+
+.gm-float-toggle {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: .82em;
+    padding: 4px 2px;
+}
+
+@media (max-width: 600px) {
+    #gm-floating {
+        right: 12px;
+        bottom: 75px;
+    }
+
+    #gm-float-panel {
+        width: 215px;
+    }
+}
