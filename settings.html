@@ -1,0 +1,67 @@
+<div id="gameManager" class="gm-root">
+  <div class="gm-header">
+    <div><strong>Game Manager</strong><small>Persistent continuity · CharMemory companion · Prompt cleanup</small></div>
+    <span id="gm-status" class="gm-status">Idle</span>
+  </div>
+
+  <section class="gm-section">
+    <h3>Prompt Optimizer</h3>
+    <label class="gm-check"><input id="gm-prompt-enabled" type="checkbox"> Enable prompt cleanup</label>
+    <label>Optimization mode
+      <select id="gm-prompt-mode">
+        <option value="conservative">Conservative — exact duplicate prompt blocks</option>
+        <option value="balanced">Balanced — exact duplicate blocks, broader length threshold</option>
+        <option value="aggressive">Aggressive — more eligible duplicate blocks</option>
+      </select>
+    </label>
+    <p class="gm-note">Cleans repeated long instruction paragraphs in system/developer messages. Text-completion cleanup is restricted to repeated instruction-like paragraphs. User/assistant dialogue, structured multimodal content, code and memory XML are protected. No LLM call is made during prompt cleanup.</p>
+    <div id="gm-prompt-stats" class="gm-muted">No prompt optimizations recorded this session.</div>
+  </section>
+
+  <section class="gm-section">
+    <h3>CharMemory → Game Manager</h3>
+    <p id="gm-memory-files" class="gm-muted">Checking for CharMemory files…</p>
+    <button id="gm-process" class="menu_button">Process CharMemory memories</button>
+    <label class="gm-check"><input id="gm-auto-process" type="checkbox" disabled> Automatic background processing (not available in this build)</label>
+    <label class="gm-check"><input id="gm-auto-apply" type="checkbox"> Automatically apply Data Bank and character metadata immediately after extraction</label>
+    <p class="gm-note">CharMemory files are read-only. Game Manager creates separate continuity files and stores a compact state object in the character card's extension metadata.</p>
+  </section>
+
+  <section class="gm-section">
+    <h3>Pending continuity update</h3>
+    <div id="gm-pending" class="gm-muted">No proposed updates.</div>
+    <div class="gm-actions">
+      <button id="gm-apply-data" class="menu_button" disabled>Apply Data Bank + character state</button>
+    </div>
+  </section>
+
+  <section class="gm-section">
+    <h3>Character state</h3>
+    <p id="gm-card-state" class="gm-muted">Character card metadata status unknown.</p>
+    <textarea id="gm-state" rows="7" placeholder="Current relationship status, roles, promises and ongoing circumstances…"></textarea>
+    <button id="gm-save-state" class="menu_button">Save character state</button>
+  </section>
+
+  <section class="gm-section">
+    <h3>Event timeline</h3>
+    <textarea id="gm-timeline" rows="7" placeholder="Chronological significant events…"></textarea>
+    <button id="gm-save-timeline" class="menu_button">Save timeline</button>
+  </section>
+
+  <section class="gm-section">
+    <h3>World lore archive</h3>
+    <textarea id="gm-lore" rows="7" placeholder="Durable facts about the shared setting…"></textarea>
+    <button id="gm-save-lore" class="menu_button">Save lore archive</button>
+  </section>
+
+  <section class="gm-section">
+    <h3>Actual Lorebook synchronization</h3>
+    <label>Existing character Lorebook name
+      <input id="gm-lorebook-name" type="text" placeholder="Leave blank to use the character's linked Lorebook">
+    </label>
+    <button id="gm-apply-lore" class="menu_button" disabled>Apply new world facts to Lorebook</button>
+    <p class="gm-note">Only entries marked with a Game Manager title are updated on later syncs. Existing unrelated entries are left alone. Review the pending update before applying.</p>
+  </section>
+
+  <div class="gm-footer"><button id="gm-refresh" class="menu_button">Refresh files and status</button></div>
+</div>
