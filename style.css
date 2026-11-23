@@ -1,14 +1,18 @@
 
-/* Main extension */
+/* ==========================================
+   GAME MANAGER — EXTENSION PANEL
+========================================== */
+
 .gm-root {
     display: flex;
     flex-direction: column;
     gap: 8px;
     padding: 6px 0;
+    width: 100%;
+    box-sizing: border-box;
     color: var(--SmartThemeBodyColor);
 }
 
-/* Collapsible header */
 .gm-header {
     width: 100%;
     display: flex;
@@ -28,6 +32,7 @@
     display: flex;
     flex-direction: column;
     gap: 3px;
+    min-width: 0;
 }
 
 .gm-header-title strong {
@@ -43,6 +48,7 @@
     display: flex;
     align-items: center;
     gap: 12px;
+    flex-shrink: 0;
 }
 
 .gm-header:hover {
@@ -64,10 +70,18 @@
 }
 
 .gm-content[hidden] {
-    display: none;
+    display: none !important;
 }
 
-/* Sections */
+.gm-status {
+    font-size: .82em;
+    opacity: .8;
+}
+
+.gm-status[data-error="true"] {
+    color: var(--SmartThemeQuoteColor);
+}
+
 .gm-section {
     border: 1px solid var(--SmartThemeBorderColor);
     border-radius: 8px;
@@ -88,13 +102,6 @@
     gap: 5px;
 }
 
-.gm-section .gm-check {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 8px;
-}
-
 .gm-section input[type="text"],
 .gm-section select,
 .gm-section textarea {
@@ -111,6 +118,7 @@
     resize: vertical;
     font-family: var(--monoFontFamily, monospace);
     font-size: .9em;
+    line-height: 1.45;
 }
 
 .gm-note,
@@ -121,32 +129,15 @@
     line-height: 1.45;
 }
 
-.gm-actions,
-.gm-footer {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-}
-
-.gm-preview {
-    font-size: .9em;
-}
-
-.gm-preview pre {
-    white-space: pre-wrap;
-    max-height: 260px;
-    overflow: auto;
-    background: var(--SmartThemeBlurTintColor);
-    padding: 8px;
-    border-radius: 5px;
-}
-
 .gm-root button:disabled {
     opacity: .45;
     cursor: not-allowed;
 }
 
-/* Floating launcher */
+/* ==========================================
+   FLOATING QUICK-ACCESS WINDOW
+========================================== */
+
 #gm-floating {
     position: fixed;
     z-index: 99999;
@@ -186,6 +177,7 @@
     background: var(--SmartThemeBlurTintColor);
     box-shadow: 0 5px 22px #0009;
     backdrop-filter: blur(12px);
+    box-sizing: border-box;
 }
 
 #gm-float-panel.gm-float-open {
@@ -242,14 +234,6 @@
 .gm-float-button:disabled {
     opacity: .4;
     cursor: not-allowed;
-}
-
-.gm-float-toggle {
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    font-size: .82em;
-    padding: 4px 2px;
 }
 
 @media (max-width: 600px) {
