@@ -1,68 +1,117 @@
 
 <div id="gameManager" class="gm-root">
-  <button id="gm-collapse-toggle" class="gm-header" type="button" aria-expanded="false">
+
+  <button id="gm-collapse-toggle"
+          class="gm-header"
+          type="button"
+          aria-expanded="false">
+
     <span class="gm-header-title">
       <strong>Game Manager</strong>
-      <small>Manual continuity · Character card · Lorebook</small>
+      <small>Independent continuity · Character card · Lorebook</small>
     </span>
+
     <span class="gm-header-right">
       <span id="gm-status" class="gm-status">Idle</span>
-      <i id="gm-collapse-icon" class="fa-solid fa-chevron-down"></i>
+      <i id="gm-collapse-icon"
+         class="fa-solid fa-chevron-down"></i>
     </span>
   </button>
 
   <div id="gm-content" class="gm-content" hidden>
+
     <section class="gm-section">
-      <h3>Conversation processing</h3>
-      <p class="gm-note">Run this after a conversation or story milestone. Game Manager reads existing CharMemory Data Bank files and prepares proposed changes. Nothing is saved until you approve it.</p>
+      <h3>Current conversation</h3>
+
+      <p class="gm-note">
+        Analyze the currently open SillyTavern chat.
+        Game Manager compares it with previously saved continuity
+        and proposes changes. Nothing is saved until approval.
+      </p>
+
       <button id="gm-process" class="menu_button">
         <i class="fa-solid fa-magnifying-glass"></i>
-        Analyze memories and prepare updates
+        Analyze current conversation
       </button>
-      <p id="gm-memory-files" class="gm-muted">CharMemory files have not been checked yet.</p>
+
+      <p id="gm-memory-files" class="gm-muted">
+        Current chat has not been checked yet.
+      </p>
     </section>
 
     <section class="gm-section">
       <h3>Review and edit proposed changes</h3>
-      <p id="gm-pending-summary" class="gm-muted">No pending analysis. Analyze memories to prepare a review.</p>
+
+      <p id="gm-pending-summary" class="gm-muted">
+        No pending analysis. Analyze the current conversation to prepare a review.
+      </p>
 
       <label>
-        Character state — saved to character card metadata
-        <textarea id="gm-state" rows="7" placeholder="Current relationship status, promises, roles and ongoing circumstances…"></textarea>
+        Character state — character card metadata
+
+        <textarea id="gm-state"
+                  rows="7"
+                  placeholder="Current relationship status, promises, roles and ongoing circumstances…"></textarea>
       </label>
 
       <label>
-        Event timeline — persistent Data Bank record
-        <textarea id="gm-timeline" rows="8" placeholder="Chronological significant events…"></textarea>
+        Event timeline — persistent record
+
+        <textarea id="gm-timeline"
+                  rows="8"
+                  placeholder="Chronological significant events…"></textarea>
       </label>
 
       <label>
-        World lore archive — persistent Data Bank record
-        <textarea id="gm-lore" rows="8" placeholder="Durable facts about the shared setting…"></textarea>
+        World lore archive
+
+        <textarea id="gm-lore"
+                  rows="8"
+                  placeholder="Durable facts about the shared setting…"></textarea>
       </label>
 
       <label>
         Proposed Lorebook entries — editable JSON
-        <textarea id="gm-facts" rows="9" spellcheck="false" placeholder='[{"title":"Entry title","keys":["keyword"],"content":"Lorebook content"}]'></textarea>
+
+        <textarea id="gm-facts"
+                  rows="9"
+                  spellcheck="false"
+                  placeholder='[{"title":"Entry title","keys":["keyword"],"content":"Lorebook content"}]'></textarea>
       </label>
 
       <label>
         Existing character Lorebook name
-        <input id="gm-lorebook-name" type="text" placeholder="Leave blank to use the character's linked Lorebook">
+
+        <input id="gm-lorebook-name"
+               type="text"
+               placeholder="Leave blank to use the character's linked Lorebook">
       </label>
 
-      <button id="gm-apply-all" class="menu_button" disabled>
+      <button id="gm-apply-all"
+              class="menu_button"
+              disabled>
+
         <i class="fa-solid fa-check"></i>
         Apply approved updates
       </button>
 
-      <p class="gm-note">Applying saves the character state, timeline and lore archive, then creates or updates Game Manager-managed Lorebook entries. CharMemory's original memory files are never modified.</p>
+      <p class="gm-note">
+        Saves approved character state, timeline and lore.
+        Creates or updates Game Manager-managed Lorebook entries.
+      </p>
     </section>
 
     <section class="gm-section">
       <h3>Existing saved continuity</h3>
-      <button id="gm-refresh" class="menu_button">Reload saved files</button>
-      <p id="gm-card-state" class="gm-muted">Character card state not checked.</p>
+
+      <button id="gm-refresh" class="menu_button">
+        Reload saved files
+      </button>
+
+      <p id="gm-card-state" class="gm-muted">
+        Character card state not checked.
+      </p>
     </section>
+
   </div>
 </div>
