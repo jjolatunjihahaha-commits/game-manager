@@ -24,10 +24,6 @@ const DEFAULTS = Object.freeze({
     floatingPosition: null
 });
 
-/* ==========================================
-   CONTEXT AND SETTINGS
-========================================== */
-
 function context() {
     return getContext();
 }
@@ -49,16 +45,21 @@ function activeCharacter() {
     const ctx = context();
 
     if (ctx.groupId) {
-        throw new Error('Group chats are not supported by this Game Manager build yet.');
+        throw new Error(
+            'Group chats are not supported by this Game Manager build yet.'
+        );
     }
 
     const id = ctx.characterId;
+
     const character = id === undefined || id === null
         ? null
         : ctx.characters?.[id];
 
     if (!character?.avatar) {
-        throw new Error('Open a 1:1 character chat before processing memories.');
+        throw new Error(
+            'Open a 1:1 character chat before processing.'
+        );
     }
 
     const data = character.data || character;
@@ -68,6 +69,7 @@ function activeCharacter() {
         avatar: character.avatar,
         name: character.name || data.name || 'Character',
         data,
+
         card: [
             data.description,
             data.personality,
@@ -80,7 +82,10 @@ function notify(message, type = 'info') {
     if (globalThis.toastr?.[type]) {
         globalThis.toastr[type](message, 'Game Manager');
     } else {
-        console[type === 'error' ? 'error' : 'log'](PREFIX, message);
+        console[type === 'error' ? 'error' : 'log'](
+            PREFIX,
+            message
+        );
     }
 }
 
@@ -92,8 +97,47 @@ function setStatus(message, isError = false) {
         node.dataset.error = isError ? 'true' : 'false';
     }
 
-    const floating = document.getElementById('gm-float-status');
+    const floating =
+        document.getElementById('gm-float-status');
+
     if (floating) floating.textContent = message;
+}
+
+/* ==========================================
+   CHAT TRANSCRIPT
+========================================== */
+
+function getCurrentConversation(ctx, character) {
+    const chat = Array.isArray(ctx.chat)
+        ? ctx.chat
+        : [];
+
+    const messages = chat
+        .filter(message =>
+            message &&
+            !message.is_system &&
+            !message.is_system_message &&
+            typeof message.mes === 'string' &&
+            message.mes.trim()
+        );
+
+    if (!messages.length) {
+        throw new Error(
+            'No readable messages were found in the current chat.'
+        );
+    }
+
+    return messages.map(message => {
+        const speaker = message.is_user
+            ? 'USER'
+            : (
+                message.name ||
+                character.name ||
+                'CHARACTER'
+            );
+
+        return `${speaker}: ${message.mes.trim()}`;
+    }).join('\n\n');
 }
 
 /* ==========================================
@@ -116,18 +160,25 @@ function clearPending() {
 
 function renderPending() {
     const p = pendingUpdate || settings().pending;
-    const summary = document.getElementById('gm-pending-summary');
-    const apply = document.getElementById('gm-apply-all');
-    const floatingApply = document.getElementById('gm-float-apply');
+
+    const summary =
+        document.getElementById('gm-pending-summary');
+
+    const apply =
+        document.getElementById('gm-apply-all');
+
+    const floatingApply =
+        document.getElementById('gm-float-apply');
 
     if (!p) {
         if (summary) {
             summary.textContent =
-                'No pending analysis. Analyze memories to prepare a review.';
+                'No pending analysis. Analyze the current conversation to prepare a review.';
         }
 
         if (apply) apply.disabled = true;
         if (floatingApply) floatingApply.disabled = true;
+
         return;
     }
 
@@ -144,19 +195,30 @@ function renderPending() {
 }
 
 function fillReviewFields(update) {
-    document.getElementById('gm-state').value = update.state || '';
-    document.getElementById('gm-timeline').value = update.timeline || '';
-    document.getElementById('gm-lore').value = update.lore || '';
+    document.getElementById('gm-state').value =
+        update.state || '';
+
+    document.getElementById('gm-timeline').value =
+        update.timeline || '';
+
+    document.getElementById('gm-lore').value =
+        update.lore || '';
 
     document.getElementById('gm-facts').value =
-        JSON.stringify(update.worldFacts || [], null, 2);
+        JSON.stringify(
+            update.worldFacts || [],
+            null,
+            2
+        );
 }
 
 function readReviewFields() {
     const p = pendingUpdate || settings().pending;
 
     if (!p) {
-        throw new Error('There is no pending analysis to apply.');
+        throw new Error(
+            'There is no pending analysis to apply.'
+        );
     }
 
     let facts;
@@ -172,15 +234,24 @@ function readReviewFields() {
     }
 
     if (!Array.isArray(facts)) {
-        throw new Error('Lorebook entries must be a JSON array.');
+        throw new Error(
+            'Lorebook entries must be a JSON array.'
+        );
     }
 
     const worldFacts = facts.map((fact, index) => {
-        const title = String(fact?.title || '').trim();
-        const content = String(fact?.content || '').trim();
+        const title = String(
+            fact?.title || ''
+        ).trim();
+
+        const content = String(
+            fact?.content || ''
+        ).trim();
 
         const keys = Array.isArray(fact?.keys)
-            ? fact.keys.map(value => String(value).trim()).filter(Boolean)
+            ? fact.keys
+                .map(value => String(value).trim())
+                .filter(Boolean)
             : [];
 
         if (!title || !content) {
@@ -189,33 +260,47 @@ function readReviewFields() {
             );
         }
 
-        return { title, keys, content };
+        return {
+            title,
+            keys,
+            content
+        };
     });
 
     return {
         ...p,
+
         state: document.getElementById('gm-state').value.trim(),
+
         timeline: document.getElementById('gm-timeline').value.trim(),
+
         lore: document.getElementById('gm-lore').value.trim(),
+
         worldFacts
     };
 }
 
 /* ==========================================
-   READ EXISTING FILES
+   LOAD SAVED CONTINUITY
 ========================================== */
 
 async function refreshSavedFiles() {
     try {
         const character = activeCharacter();
-        const data = await loadContinuity(character, context());
+        const ctx = context();
+
+        const data = await loadContinuity(
+            character,
+            ctx
+        );
+
+        const chat = Array.isArray(ctx.chat)
+            ? ctx.chat
+            : [];
 
         document.getElementById('gm-memory-files').textContent =
-            data.memoryFiles.length
-                ? `Found ${data.memoryFiles.length} CharMemory file(s): ${
-                    data.memoryFiles.map(file => file.name).join(', ')
-                }`
-                : 'No CharMemory memory files found. Run CharMemory extraction first, then return here.';
+            `Current chat loaded: ${chat.length} messages. ` +
+            'Game Manager continuity records are available independently.';
 
         document.getElementById('gm-card-state').textContent =
             character.data?.extensions?.game_manager?.characterState
@@ -223,19 +308,19 @@ async function refreshSavedFiles() {
                 : 'No Game Manager character-state metadata exists yet.';
 
         return data;
-    } catch (error) {
-        const files = document.getElementById('gm-memory-files');
 
-        if (files) files.textContent = error.message;
+    } catch (error) {
+        const node =
+            document.getElementById('gm-memory-files');
+
+        if (node) node.textContent = error.message;
 
         throw error;
     }
 }
 
 /* ==========================================
-   MANUAL ANALYSIS
-   LLM CALL ONLY HAPPENS WHEN USER PRESSES
-   THE ANALYZE BUTTON.
+   MANUAL CONVERSATION ANALYSIS
 ========================================== */
 
 async function processConversation() {
@@ -248,25 +333,28 @@ async function processConversation() {
 
     if (processButton) processButton.disabled = true;
 
-    setStatus('Reading CharMemory files…');
+    setStatus('Reading current conversation…');
 
     try {
         const character = activeCharacter();
         const ctx = context();
 
-        const existing = await loadContinuity(character, ctx);
+        const transcript = getCurrentConversation(
+            ctx,
+            character
+        );
 
-        if (!existing.memoryFiles.length) {
-            throw new Error(
-                'No CharMemory Data Bank memory file was found for this character. Run CharMemory extraction first.'
-            );
-        }
+        const existing = await loadContinuity(
+            character,
+            ctx
+        );
 
         setStatus('Analyzing story continuity…');
 
         const update = await buildContinuityUpdate(
             character,
             existing,
+            transcript,
             generateQuietPrompt
         );
 
@@ -285,12 +373,17 @@ async function processConversation() {
 
         setStatus('Analysis failed', true);
 
-        notify(error.message || String(error), 'error');
+        notify(
+            error.message || String(error),
+            'error'
+        );
 
     } finally {
         processing = false;
 
-        if (processButton) processButton.disabled = false;
+        if (processButton) {
+            processButton.disabled = false;
+        }
     }
 }
 
@@ -301,12 +394,16 @@ async function processConversation() {
 function injectCharacterState(state) {
     const ctx = context();
 
-    if (typeof ctx.setExtensionPrompt !== 'function') return;
+    if (typeof ctx.setExtensionPrompt !== 'function') {
+        return;
+    }
 
     const text = String(state || '').trim();
 
     const prompt = text
-        ? `[Persistent Character State — Game Manager]\n${text}\nTreat these as established continuity facts unless explicitly changed by later events.`
+        ? `[Persistent Character State — Game Manager]
+${text}
+Treat these as established continuity facts unless explicitly changed by later events.`
         : '';
 
     ctx.setExtensionPrompt(
@@ -320,7 +417,7 @@ function injectCharacterState(state) {
 }
 
 /* ==========================================
-   APPLY APPROVED CHANGES
+   APPLY APPROVED UPDATES
 ========================================== */
 
 async function applyApprovedUpdates() {
@@ -353,7 +450,10 @@ async function applyApprovedUpdates() {
             || ''
         ).trim();
 
-        if (approved.worldFacts.length && !bookName) {
+        if (
+            approved.worldFacts.length &&
+            !bookName
+        ) {
             throw new Error(
                 'The analysis contains Lorebook entries, but no Lorebook is selected. Enter an existing Lorebook name before applying.'
             );
@@ -364,7 +464,6 @@ async function applyApprovedUpdates() {
 
         setStatus('Saving character state and continuity files…');
 
-        // Save Data Bank files and character-card extension metadata.
         await persistContinuity(
             approved,
             character,
@@ -373,10 +472,10 @@ async function applyApprovedUpdates() {
 
         dataBankSaved = true;
 
-        // Update the active character's continuity prompt.
-        injectCharacterState(approved.state);
+        injectCharacterState(
+            approved.state
+        );
 
-        // Synchronize Lorebook entries only after approval.
         if (approved.worldFacts.length) {
             setStatus('Synchronizing approved Lorebook entries…');
 
@@ -391,6 +490,7 @@ async function applyApprovedUpdates() {
                 `Character state saved. Lorebook "${result.bookName}": ${result.created} created, ${result.updated} updated.`,
                 'success'
             );
+
         } else {
             notify(
                 'Character state, timeline and lore archive saved. No Lorebook entries were proposed.',
@@ -408,22 +508,31 @@ async function applyApprovedUpdates() {
         console.error(PREFIX, error);
 
         if (dataBankSaved) {
-            setStatus('Character saved; Lorebook sync needs attention', true);
+            setStatus(
+                'Character saved; Lorebook sync needs attention',
+                true
+            );
 
             notify(
                 `Character state and continuity files were saved, but the remaining step failed: ${error.message}. The pending review has been kept so you can retry.`,
                 'error'
             );
+
         } else {
             setStatus('Update not applied', true);
-            notify(error.message || String(error), 'error');
+
+            notify(
+                error.message || String(error),
+                'error'
+            );
         }
 
     } finally {
         applying = false;
 
         if (applyButton) {
-            applyButton.disabled = !(pendingUpdate || settings().pending);
+            applyButton.disabled =
+                !(pendingUpdate || settings().pending);
         }
 
         renderPending();
@@ -431,12 +540,15 @@ async function applyApprovedUpdates() {
 }
 
 /* ==========================================
-   COLLAPSIBLE EXTENSION PANEL
+   COLLAPSIBLE PANEL
 ========================================== */
 
 function bindCollapsiblePanel(ctx) {
-    const content = document.getElementById('gm-content');
-    const toggle = document.getElementById('gm-collapse-toggle');
+    const content =
+        document.getElementById('gm-content');
+
+    const toggle =
+        document.getElementById('gm-collapse-toggle');
 
     const open = !!settings().panelExpanded;
 
@@ -490,15 +602,14 @@ function createFloatingUI(ctx) {
                         aria-label="Close">×</button>
             </div>
 
-            <div id="gm-float-status" class="gm-float-status">
-                Idle
-            </div>
+            <div id="gm-float-status"
+                 class="gm-float-status">Idle</div>
 
             <button class="gm-float-button"
                     id="gm-float-process"
                     type="button">
                 <i class="fa-solid fa-magnifying-glass"></i>
-                Analyze memories
+                Analyze conversation
             </button>
 
             <button class="gm-float-button"
@@ -520,8 +631,11 @@ function createFloatingUI(ctx) {
 
     document.body.appendChild(root);
 
-    const panel = root.querySelector('#gm-float-panel');
-    const drag = root.querySelector('#gm-float-drag');
+    const panel =
+        root.querySelector('#gm-float-panel');
+
+    const drag =
+        root.querySelector('#gm-float-drag');
 
     const saved = settings().floatingPosition;
 
@@ -537,7 +651,10 @@ function createFloatingUI(ctx) {
     }
 
     function setOpen(open) {
-        panel.classList.toggle('gm-float-open', open);
+        panel.classList.toggle(
+            'gm-float-open',
+            open
+        );
 
         settings().floatingOpen = open;
 
@@ -546,11 +663,15 @@ function createFloatingUI(ctx) {
 
     root.querySelector('#gm-float-launcher')
         .addEventListener('click', () => {
-            setOpen(!panel.classList.contains('gm-float-open'));
+            setOpen(
+                !panel.classList.contains('gm-float-open')
+            );
         });
 
     root.querySelector('#gm-float-close')
-        .addEventListener('click', () => setOpen(false));
+        .addEventListener('click', () => {
+            setOpen(false);
+        });
 
     root.querySelector('#gm-float-process')
         .addEventListener('click', processConversation);
@@ -647,9 +768,17 @@ function bindUI(ctx) {
         .addEventListener('click', async () => {
             try {
                 await refreshSavedFiles();
-                notify('Saved continuity files reloaded.', 'success');
+
+                notify(
+                    'Saved continuity files reloaded.',
+                    'success'
+                );
+
             } catch (error) {
-                notify(error.message || String(error), 'error');
+                notify(
+                    error.message || String(error),
+                    'error'
+                );
             }
         });
 
@@ -658,11 +787,12 @@ function bindUI(ctx) {
 
     document.getElementById('gm-lorebook-name')
         .addEventListener('change', event => {
-            settings().lorebookName = event.target.value.trim();
+            settings().lorebookName =
+                event.target.value.trim();
+
             ctx.saveSettingsDebounced();
         });
 
-    // Restore an unfinished review after reloading SillyTavern.
     pendingUpdate = settings().pending || null;
 
     if (pendingUpdate) {
@@ -670,10 +800,11 @@ function bindUI(ctx) {
     }
 
     renderPending();
+
     createFloatingUI(ctx);
 
     refreshSavedFiles().catch(error => {
-        console.warn(PREFIX, 'Initial file refresh failed:', error);
+        console.warn(PREFIX, error);
     });
 }
 
@@ -697,36 +828,43 @@ async function init() {
     bindUI(ctx);
 
     /*
-     * Deliberately no prompt optimizer.
+     * No prompt optimizer.
      * No generation interceptors.
-     * No per-message extraction.
+     * No per-message LLM calls.
      *
      * Character state is injected only after approval
      * and when the active chat changes.
      */
 
-    const eventTypes = ctx.eventTypes || ctx.event_types;
+    const eventTypes =
+        ctx.eventTypes || ctx.event_types;
 
-    if (eventTypes?.CHAT_CHANGED && ctx.eventSource?.on) {
-        ctx.eventSource.on(eventTypes.CHAT_CHANGED, () => {
-            setTimeout(() => {
-                try {
-                    const character = activeCharacter();
+    if (
+        eventTypes?.CHAT_CHANGED &&
+        ctx.eventSource?.on
+    ) {
+        ctx.eventSource.on(
+            eventTypes.CHAT_CHANGED,
+            () => {
+                setTimeout(() => {
+                    try {
+                        const character = activeCharacter();
 
-                    const state =
-                        character.data?.extensions?.game_manager?.characterState || '';
+                        const state =
+                            character.data?.extensions?.game_manager?.characterState || '';
 
-                    injectCharacterState(state);
+                        injectCharacterState(state);
 
-                    refreshSavedFiles().catch(error => {
-                        console.warn(PREFIX, error);
-                    });
+                        refreshSavedFiles().catch(error => {
+                            console.warn(PREFIX, error);
+                        });
 
-                } catch {
-                    // No active solo character.
-                }
-            }, 300);
-        });
+                    } catch {
+                        // No active solo character.
+                    }
+                }, 300);
+            }
+        );
     }
 
     try {
@@ -735,6 +873,7 @@ async function init() {
         injectCharacterState(
             character.data?.extensions?.game_manager?.characterState || ''
         );
+
     } catch {
         // Welcome screen or no active character.
     }
@@ -743,8 +882,17 @@ async function init() {
 jQuery(async () => {
     try {
         await init();
+
     } catch (error) {
-        console.error(PREFIX, 'Initialization failed.', error);
-        notify(error.message || String(error), 'error');
+        console.error(
+            PREFIX,
+            'Initialization failed.',
+            error
+        );
+
+        notify(
+            error.message || String(error),
+            'error'
+        );
     }
 });
